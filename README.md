@@ -1,6 +1,14 @@
 # 439TestFetcher
 
-## How to use
+## Running the Code
+
+To run, you must first install the required node modules
+
+To do this, simply run `node install` inside of the project directory
+
+Finally, run the code using `node fetcher.js` in your terminal
+
+## Configuring the Options file
 
 Edit the `options.txt` file to contain the following information:
 
