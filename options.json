@@ -2,7 +2,7 @@
 	"projectPath":"/absolute/path/to/project",
 	"testName":"name of tests",
 	"gitUrl":"git repo",
-	"fetchAll":true,
+	"fetchAll":true/false,
 	"tests":[
 		"t0"
 	]
