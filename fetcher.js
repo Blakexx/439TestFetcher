@@ -39,7 +39,7 @@ if(options["fetchAll"]){
 
 	//Delete temp dir
 	shell.rm("-rf","./temp");
-	
+
 }else{
 	//Set up the requested test files
 	let toFetch = [];
@@ -49,9 +49,9 @@ if(options["fetchAll"]){
 	});
 
 	//Retrieve all requested tests concurrently
-	Promise.all(toFetch.map(s=>fetch(options["websiteUrl"]+"/"+s))).then(responses=>{
+	Promise.all(toFetch.map(s=>fetch(options["websiteUrl"]+"/"+options["testName"]+"/"+s))).then(responses=>{
 		//Map response to text
-		return Promise.all(responses.map(response => response.text()));
+		return Promise.all(responses.map(response => response.status==200?response.text():null));
 	}).then(data=>{
 		copyToProject(toFetch,data);
 	});
@@ -63,12 +63,15 @@ function copyToProject(namesList, dataList){
 	console.log("Copying to "+projectPath+"...");
 	for(let i = 0; i<namesList.length;i++){
 		let filePath = projectPath+"/"+namesList[i];
-		extra.ensureFile(filePath).then(()=>{
-			fs.writeFile(filePath,dataList[i],err=>{
-				if(err){
-					console.error(err);
-				}
+		let data = dataList[i];
+		if(data){
+			extra.ensureFile(filePath).then(()=>{
+				fs.writeFile(filePath,data,err=>{
+					if(err){
+						console.error(err);
+					}
+				});
 			});
-		});
+		}
 	}
 }
