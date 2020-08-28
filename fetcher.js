@@ -24,7 +24,7 @@ if(options["fetchAll"]){
 	shell.rm("-rf","./temp");
 
 	//Get files from git
-	shell.exec("git clone "+options["gitUrl"]+":"+options["testName"]+" ./temp");
+	shell.exec("git clone "+options["gitUrl"]+":"+options["testGroup"]+" ./temp");
 	let files = fs.readdirSync("./temp");
 
 	//Remove .git file
@@ -49,7 +49,7 @@ if(options["fetchAll"]){
 	});
 
 	//Retrieve all requested tests concurrently
-	Promise.all(toFetch.map(s=>fetch(options["websiteUrl"]+"/"+options["testName"]+"/"+s))).then(responses=>{
+	Promise.all(toFetch.map(s=>fetch(options["websiteUrl"]+"/"+options["testGroup"]+"/"+s))).then(responses=>{
 		//Map response to text
 		return Promise.all(responses.map(response => response.status==200?response.text():null));
 	}).then(data=>{

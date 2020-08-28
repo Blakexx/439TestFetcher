@@ -4,7 +4,7 @@
 
 To run, you must first install the required node modules
 
-To do this, simply run `node install` inside of the project directory
+To do this, simply run `npm install` inside of the project directory
 
 Finally, run the code using `node fetcher.js` in your terminal
 
@@ -14,7 +14,7 @@ Edit the `options.json` file to contain the following information:
 
 `"projectPath"`: The absolute local path where you with the create the test files
 
-`"testName"`: The name of the tests you are fetching
+`"testGroup"`: The name of the tests you are fetching
 
 `"gitUrl"`: The git repo where the tests are stored
 
