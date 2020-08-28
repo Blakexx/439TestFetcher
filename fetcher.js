@@ -5,6 +5,7 @@ const shell = require('shelljs')
 
 let options = require("./options.json");
 
+//Override fs.readFile to return a Promise
 fs.readFileAsync = function(filename,enc){
 	return new Promise(function(resolve,reject){
 		fs.readFile(filename,enc,function(err,data){
@@ -17,35 +18,49 @@ fs.readFileAsync = function(filename,enc){
 	});
 }
 
-shell.rm("-rf","./temp");
-//Get files from git
-shell.exec("git clone "+options["gitUrl"]+":"+options["testName"]+" ./temp");
-let files = fs.readdirSync("./temp");
+if(options["fetchAll"]){
 
-//Filter out files
-let index = files.indexOf(".git");
-if(index>-1){
-	files.splice(index,1);
-}
-if(!options["fetchAll"]){
-	let toRetain = options["tests"];
-	files = files.filter(fileName=>{
-		let index = fileName.lastIndexOf(".");
-		let name = fileName.substring(0,index);
-		return toRetain.includes(name);
+	//Delete temp dir
+	shell.rm("-rf","./temp");
+
+	//Get files from git
+	shell.exec("git clone "+options["gitUrl"]+":"+options["testName"]+" ./temp");
+	let files = fs.readdirSync("./temp");
+
+	//Remove .git file
+	let index = files.indexOf(".git");
+	if(index>-1){
+		files.splice(index,1);
+	}
+
+	Promise.all(files.map(fileName=>fs.readFileAsync("./temp/"+fileName,"utf8"))).then(data=>{
+		copyToProject(files,data);
+	});
+
+	//Delete temp dir
+	shell.rm("-rf","./temp");
+	
+}else{
+	//Set up the requested test files
+	let toFetch = [];
+	options["tests"].forEach(s=>{
+		toFetch.push(s+".cc");
+		toFetch.push(s+".ok");
+	});
+
+	//Retrieve all requested tests concurrently
+	Promise.all(toFetch.map(s=>fetch(options["websiteUrl"]+"/"+s))).then(responses=>{
+		//Map response to text
+		return Promise.all(responses.map(response => response.text()));
+	}).then(data=>{
+		copyToProject(toFetch,data);
 	});
 }
 
-Promise.all(files.map(fileName=>fs.readFileAsync("./temp/"+fileName,"utf8"))).then(data=>{
-	copyToProject(files,data);
-});
-
-shell.rm("-rf","./temp");
-
 function copyToProject(namesList, dataList){
-	console.log("Copying to project...");
 	//For each fetched file, write it to the project directory
 	let projectPath = options["projectPath"];
+	console.log("Copying to "+projectPath+"...");
 	for(let i = 0; i<namesList.length;i++){
 		let filePath = projectPath+"/"+namesList[i];
 		extra.ensureFile(filePath).then(()=>{
@@ -57,4 +72,3 @@ function copyToProject(namesList, dataList){
 		});
 	}
 }
-
