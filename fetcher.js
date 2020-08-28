@@ -1,31 +1,66 @@
 const fetch = require("node-fetch");
 const fs = require("fs");
 var extra = require("fs-extra");
+const shell = require('shelljs')
 
 let options = require("./options.json");
 
-//Set up the requested test files
-let toFetch = [];
-options["tests"].forEach(s=>{
-	toFetch.push(s+".cc");
-	toFetch.push(s+".ok");
-});
+fs.readFileAsync = function(filename,enc){
+	return new Promise(function(resolve,reject){
+		fs.readFile(filename,enc,function(err,data){
+			if(err){
+				reject(err);
+			}else{
+				resolve(data);
+			}
+		});
+	});
+}
 
-//Retrieve all requested tests concurrently
-Promise.all(toFetch.map(s=>fetch(options["testsUrl"]+"/"+s))).then(responses=>{
-	//Map response to text
-	return Promise.all(responses.map(response => response.text()));
-}).then(data=>{
+if(options["fetchAll"]){
+	shell.rm("-rf","./temp");
+	//Get files from git
+	shell.exec("git clone "+options["gitUrl"]+":"+options["testName"]+" ./temp");
+	let files = fs.readdirSync("./temp");
+	//Remove .git file
+	let index = files.indexOf(".git");
+	if(index>-1){
+		files.splice(index,1);
+	}
+	Promise.all(files.map(fileName=>fs.readFileAsync("./temp/"+fileName,"utf8"))).then(data=>{
+		copyToProject(files,data);
+	});
+	shell.rm("-rf","./temp");
+}else{
+	//Set up the requested test files
+	let toFetch = [];
+	options["tests"].forEach(s=>{
+		toFetch.push(s+".cc");
+		toFetch.push(s+".ok");
+	});
+
+	//Retrieve all requested tests concurrently
+	Promise.all(toFetch.map(s=>fetch(options["testsUrl"]+"/"+s))).then(responses=>{
+		//Map response to text
+		return Promise.all(responses.map(response => response.text()));
+	}).then(data=>{
+		copyToProject(toFetch,data);
+	});
+}
+
+function copyToProject(namesList, dataList){
+	console.log("Copying to project...");
 	//For each fetched file, write it to the project directory
 	let projectPath = options["projectPath"];
-	for(let i = 0; i<toFetch.length;i++){
-		let filePath = projectPath+"/"+toFetch[i];
+	for(let i = 0; i<namesList.length;i++){
+		let filePath = projectPath+"/"+namesList[i];
 		extra.ensureFile(filePath).then(()=>{
-			fs.writeFile(filePath,data[i],err=>{
+			fs.writeFile(filePath,dataList[i],err=>{
 				if(err){
 					console.error(err);
 				}
 			});
 		});
 	}
-});
+}
+
