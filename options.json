@@ -1,0 +1,7 @@
+{
+	"projectPath":"absolute/path/to/project",
+	"testsUrl":"insert the url where tests are stored",
+	"tests":[
+		"t0"
+	]
+}

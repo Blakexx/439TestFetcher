@@ -1,0 +1,24 @@
+{
+  "name": "testfetcher",
+  "version": "1.0.0",
+  "description": "Fetches Tests for 439 Labs",
+  "main": "fetcher.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Blakexx/439TestFetcher.git"
+  },
+  "author": "Blake Bottum",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Blakexx/439TestFetcher/issues"
+  },
+  "homepage": "https://github.com/Blakexx/439TestFetcher#readme",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "fs-extra": "^9.0.1",
+    "node-fetch": "^2.6.0"
+  }
+}
