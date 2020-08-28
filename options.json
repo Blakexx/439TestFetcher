@@ -1,8 +1,7 @@
 {
-	"projectPath":"absolute/path/to/project",
+	"projectPath":"/absolute/path/to/project",
 	"testName":"name of tests",
-	"testsUrl":"website with test data",
-	"gitUrl":"git repo with tests",
+	"gitUrl":"git repo",
 	"fetchAll":true,
 	"tests":[
 		"t0"
