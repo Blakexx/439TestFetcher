@@ -19,7 +19,7 @@ Promise.all(toFetch.map(s=>fetch(options["testsUrl"]+"/"+s))).then(responses=>{
 		extra.ensureFile(filePath).then(()=>{
 			fs.writeFile(filePath,data[i],err=>{
 				if(err){
-					console.log(err);
+					console.error(err);
 				}
 			});
 		});
