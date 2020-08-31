@@ -1,10 +1,10 @@
 {
-	"projectPath":"/absolute/path/to/project",
-	"testGroup":"name of tests",
-	"gitUrl":"Git repo",
-	"websiteUrl":"The website",
-	"fetchAll":true/false,
+	"projectPath":"/u/blakeb/439/project0",
+	"testGroup":"cs439_f20_p1__tests",
+	"gitUrl":"git@git.cs429.com",
+	"websiteUrl":"https://www.cs.utexas.edu/~gheith",
+	"fetchAll":false,
 	"tests":[
-		"t0"
+		"054_02be02e94493149a2fa77c700051ef66"
 	]
 }
